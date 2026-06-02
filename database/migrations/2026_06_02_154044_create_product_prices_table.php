@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->foreignId('product_variant_id')
                 ->nullable()
-                ->constrained()
+                ->constrained('product_variants')
                 ->nullOnDelete();
 
             $table->integer('qty_min');
