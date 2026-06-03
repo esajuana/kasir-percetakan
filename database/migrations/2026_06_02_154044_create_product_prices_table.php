@@ -36,14 +36,12 @@ return new class extends Migration
 
             $table->boolean('status')->default(true);
 
-            $table->index([
-                'product_id',
-                'product_variant_id',
-                'qty_min',
-                'qty_max'
-            ]);
-            
             $table->timestamps();
+
+            $table->index(
+                ['product_id', 'product_variant_id', 'qty_min', 'qty_max'],
+                'idx_product_price_lookup'
+            );
         });
     }
 

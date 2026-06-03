@@ -6,6 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductPrice extends Model
 {
+    protected $fillable = [
+        'product_id',
+        'product_variant_id',
+        'qty_min',
+        'qty_max',
+        'price',
+        'effective_from',
+        'effective_until',
+        'status'
+    ];
+
+    protected $casts = [
+        'effective_from' => 'date',
+        'effective_until' => 'date',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);
@@ -13,6 +29,9 @@ class ProductPrice extends Model
 
     public function variant()
     {
-        return $this->belongsTo(ProductVariant::class,'product_variant_id');
+        return $this->belongsTo(
+            ProductVariant::class,
+            'product_variant_id'
+        );
     }
 }
