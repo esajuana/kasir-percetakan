@@ -19,7 +19,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->decimal('qty', 15, 2)->default(0);
-
+            $table->unique('product_id');
             $table->timestamps();
         });
     }

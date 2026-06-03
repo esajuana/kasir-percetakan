@@ -35,6 +35,11 @@ return new class extends Migration
             $table->foreignId('created_by')
                 ->constrained('users');
 
+            $table->index([
+                'reference_type',
+                'reference_id'
+            ]);
+            
             $table->timestamps();
         });
     }

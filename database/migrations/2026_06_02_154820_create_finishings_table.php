@@ -12,18 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('finishings', function (Blueprint $table) {
+
             $table->id();
+
+            $table->foreignId('category_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
             $table->string('name');
 
-            $table->enum('pricing_type', [
+            $table->enum('pricing_type',[
                 'pcs',
                 'meter',
                 'area',
                 'flat'
             ]);
-
-            $table->decimal('price', 15, 2);
 
             $table->boolean('status')->default(true);
 

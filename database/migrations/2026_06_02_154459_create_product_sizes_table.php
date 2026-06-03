@@ -30,6 +30,11 @@ return new class extends Migration
 
         $table->boolean('status')->default(true);
 
+        $table->unique([
+            'product_id',
+            'name'
+        ]);
+        
         $table->timestamps();
         });
     }

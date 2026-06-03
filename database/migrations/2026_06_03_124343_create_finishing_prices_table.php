@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_prices', function (Blueprint $table) {
+        Schema::create('finishing_prices', function (Blueprint $table) {
 
             $table->id();
 
-            $table->foreignId('product_id')
+            $table->foreignId('finishing_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignId('product_variant_id')
+            $table->foreignId('finishing_variant_id')
                 ->nullable()
-                ->constrained('product_variants')
+                ->constrained()
                 ->nullOnDelete();
 
             $table->integer('qty_min');
@@ -36,13 +36,6 @@ return new class extends Migration
 
             $table->boolean('status')->default(true);
 
-            $table->index([
-                'product_id',
-                'product_variant_id',
-                'qty_min',
-                'qty_max'
-            ]);
-            
             $table->timestamps();
         });
     }
@@ -52,6 +45,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_prices');
+        Schema::dropIfExists('finishing_prices');
     }
 };

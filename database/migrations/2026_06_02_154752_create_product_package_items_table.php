@@ -24,6 +24,11 @@ return new class extends Migration
 
             $table->integer('qty')->default(1);
 
+            $table->unique([
+                'package_product_id',
+                'product_id'
+            ]);
+            
             $table->timestamps();
         });
     }

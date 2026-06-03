@@ -20,6 +20,7 @@ return new class extends Migration
 
             $table->string('code')->unique();
             $table->string('name');
+            $table->text('description')->nullable();
 
             $table->enum('calculation_type', [
                 'area',
