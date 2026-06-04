@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Master\CategoryController;
 use App\Http\Controllers\Master\ProductController;
+use App\Http\Controllers\Master\ProductVariantController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -47,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::resource('categories', CategoryController::class);
             Route::resource('products', ProductController::class);
+            Route::resource('product-variants', ProductVariantController::class);
         });
 
 });

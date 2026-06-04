@@ -30,6 +30,15 @@
 
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a href="{{ route('master.product-variants.index') }}"
+                class="nav-link text-white">
+
+                    Variant Produk
+
+                </a>
+            </li>
         </ul>
 
     </div>
