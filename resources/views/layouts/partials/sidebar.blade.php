@@ -22,13 +22,14 @@
                 </a>
             </li>
 
-            {{-- <li class="nav-item">
+           <li class="nav-item">
                 <a href="{{ route('master.products.index') }}"
-                   class="nav-link text-white">
-                    Produk
-                </a>
-            </li> --}}
+                class="nav-link text-white">
 
+                    Produk
+
+                </a>
+            </li>
         </ul>
 
     </div>
