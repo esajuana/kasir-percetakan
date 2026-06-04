@@ -39,6 +39,16 @@
 
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a href="{{ route('master.product-prices.index') }}"
+                class="nav-link text-white">
+
+                    Harga Produk
+
+                </a>
+            </li>
+
         </ul>
 
     </div>
