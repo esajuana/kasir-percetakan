@@ -36,6 +36,13 @@ return new class extends Migration
 
             $table->boolean('status')->default(true);
 
+            $table->index([
+                'finishing_id',
+                'finishing_variant_id',
+                'qty_min',
+                'qty_max'
+            ], 'idx_finishing_price_lookup');
+
             $table->timestamps();
         });
     }

@@ -28,7 +28,8 @@ return new class extends Migration
                 'unit',
                 'size_fixed',
                 'package',
-                'manual'
+                'manual',
+                'perimeter'
             ]);
 
             $table->decimal('minimum_price',15,2)->default(0);

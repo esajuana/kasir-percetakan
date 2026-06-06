@@ -22,10 +22,11 @@ return new class extends Migration
             $table->string('name');
 
             $table->enum('pricing_type',[
-                'pcs',
-                'meter',
                 'area',
-                'flat'
+                'length',
+                'unit',
+                'manual',
+                'perimeter'
             ]);
 
             $table->boolean('status')->default(true);

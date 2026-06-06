@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\StoreProductPriceRequest;
 use App\Http\Requests\Master\UpdateProductPriceRequest;
 use App\Models\Product;
+use App\Models\ProductOption;
 use App\Models\ProductPrice;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Master\CategoryController;
+use App\Http\Controllers\Master\FinishingController;
 use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\ProductOptionController;
 use App\Http\Controllers\Master\ProductPriceController;
@@ -53,6 +54,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('product-variants', ProductVariantController::class);
             Route::resource('product-prices', ProductPriceController::class);
             Route::resource('product-options', ProductOptionController::class);
+            Route::resource('finishings', FinishingController::class);
+
 
             Route::post('product-options/ajax-store',[ProductOptionController::class, 'ajaxStore'])->name('product-options.ajax-store');
         });

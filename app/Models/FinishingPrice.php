@@ -17,6 +17,11 @@ class FinishingPrice extends Model
         'status'
     ];
 
+    protected $casts = [
+        'effective_from' => 'date',
+        'effective_until' => 'date'
+    ];
+
     public function finishing()
     {
         return $this->belongsTo(Finishing::class);

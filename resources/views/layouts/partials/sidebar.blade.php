@@ -58,6 +58,15 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a href="{{ route('master.finishings.index') }}"
+                class="nav-link text-white">
+
+                    Finishing
+
+                </a>
+            </li>
+
         </ul>
 
     </div>
