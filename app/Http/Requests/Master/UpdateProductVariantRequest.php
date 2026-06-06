@@ -14,6 +14,24 @@ class UpdateProductVariantRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $tiers = $this->price_tiers ?? [];
+
+        foreach ($tiers as $key => $tier)
+        {
+            $tiers[$key]['price'] = str_replace(
+                '.',
+                '',
+                $tier['price'] ?? 0
+            );
+        }
+
+        $this->merge([
+            'price_tiers' => $tiers
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,8 +41,8 @@ class UpdateProductVariantRequest extends FormRequest
     {
         return [
             'product_id' => [
-            'required',
-            'exists:products,id'
+                'required',
+                'exists:products,id'
             ],
 
             'name' => [
@@ -35,6 +53,34 @@ class UpdateProductVariantRequest extends FormRequest
             'status' => [
                 'required',
                 'boolean'
+            ],
+
+            'price_tiers' => [
+                'nullable',
+                'array'
+            ],
+
+            'price_tiers.*.product_option_id' => [
+                'nullable',
+                'exists:product_options,id'
+            ],
+
+            'price_tiers.*.qty_min' => [
+                'required_with:price_tiers',
+                'integer',
+                'min:1'
+            ],
+
+            'price_tiers.*.qty_max' => [
+                'required_with:price_tiers',
+                'integer',
+                'gte:price_tiers.*.qty_min'
+            ],
+
+            'price_tiers.*.price' => [
+                'required_with:price_tiers',
+                'numeric',
+                'min:0'
             ],
         ];
     }

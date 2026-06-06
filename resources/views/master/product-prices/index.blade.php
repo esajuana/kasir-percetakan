@@ -33,6 +33,8 @@
 
                     <th>Variant</th>
 
+                    <th>Option</th>
+
                     <th>Qty</th>
 
                     <th>Harga</th>
@@ -63,6 +65,10 @@
 
                         <td>
                             {{ $price->variant->name ?? '-' }}
+                        </td>
+
+                        <td>
+                            {{ $price->option->name ?? '-' }}
                         </td>
 
                         <td>

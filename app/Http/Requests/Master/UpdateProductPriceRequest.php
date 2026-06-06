@@ -26,6 +26,8 @@ class UpdateProductPriceRequest extends FormRequest
 
             'product_variant_id' => 'nullable|exists:product_variants,id',
 
+            'product_option_id' => 'nullable|exists:product_options,id',
+            
             'qty_min' => 'required|integer|min:1',
 
             'qty_max' => 'required|integer|gte:qty_min',

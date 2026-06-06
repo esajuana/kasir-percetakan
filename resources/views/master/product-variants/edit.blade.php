@@ -1,19 +1,24 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Variant Produk')
+@section('title', 'Edit Product Variant')
 
 @section('content')
 
 <div class="card">
 
     <div class="card-header">
-        Edit Variant Produk
+
+        Edit Product Variant
+
     </div>
 
     <div class="card-body">
 
         <form
-            action="{{ route('master.product-variants.update', $variant) }}"
+            action="{{ route(
+                'master.product-variants.update',
+                $variant
+            ) }}"
             method="POST">
 
             @csrf
@@ -28,3 +33,5 @@
 </div>
 
 @endsection
+
+@include('master.product-variants.script')

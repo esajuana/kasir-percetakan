@@ -44,11 +44,17 @@ class ProductPriceController extends Controller
             ->orderBy('name')
             ->get();
 
+        $options = ProductOption::where(
+            'status',
+            true
+        )->orderBy('name')->get();
+
         return view(
             'master.product-prices.create',
             compact(
                 'products',
-                'variants'
+                'variants',
+                'options'
             )
         );
     }
@@ -91,12 +97,18 @@ class ProductPriceController extends Controller
             ->orderBy('name')
             ->get();
 
+        $options = ProductOption::where(
+            'status',
+            true
+        )->orderBy('name')->get();
+
         return view(
             'master.product-prices.edit',
             [
                 'price' => $product_price,
                 'products' => $products,
-                'variants' => $variants
+                'variants' => $variants,
+                'options' => $options
             ]
         );
     }

@@ -1,13 +1,15 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Variant Produk')
+@section('title', 'Tambah Product Variant')
 
 @section('content')
 
 <div class="card">
 
     <div class="card-header">
-        Tambah Variant Produk
+
+        Tambah Product Variant
+
     </div>
 
     <div class="card-body">
@@ -27,3 +29,5 @@
 </div>
 
 @endsection
+
+@include('master.product-variants.script')

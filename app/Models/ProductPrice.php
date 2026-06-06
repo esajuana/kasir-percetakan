@@ -9,12 +9,13 @@ class ProductPrice extends Model
     protected $fillable = [
         'product_id',
         'product_variant_id',
+        'product_option_id',
         'qty_min',
         'qty_max',
         'price',
         'effective_from',
         'effective_until',
-        'status'
+        'status',
     ];
 
     protected $casts = [
@@ -32,6 +33,14 @@ class ProductPrice extends Model
         return $this->belongsTo(
             ProductVariant::class,
             'product_variant_id'
+        );
+    }
+
+    public function option()
+    {
+        return $this->belongsTo(
+            ProductOption::class,
+            'product_option_id'
         );
     }
 }

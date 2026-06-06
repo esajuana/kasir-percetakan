@@ -44,4 +44,9 @@ class Product extends Model
     {
         return $this->hasOne(Stock::class);
     }
+
+    public function options()
+    {
+        return $this->hasMany(ProductOption::class);
+    }
 }

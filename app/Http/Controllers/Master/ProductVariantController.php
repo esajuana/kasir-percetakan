@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\StoreProductVariantRequest;
 use App\Http\Requests\Master\UpdateProductVariantRequest;
 use App\Models\Product;
+use App\Models\ProductOption;
 use App\Models\ProductVariant;
+use App\Models\ProductPrice;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class ProductVariantController extends Controller
@@ -28,11 +31,27 @@ class ProductVariantController extends Controller
      */
     public function create()
     {
-        $products = Product::where('status', true)
-            ->orderBy('name')
-            ->get();
+        $products = Product::where(
+            'status',
+            true
+        )
+        ->orderBy('name')
+        ->get();
 
-        return view('master.product-variants.create', compact('products'));
+        $options = ProductOption::where(
+            'status',
+            true
+        )
+        ->get()
+        ->groupBy('product_id');
+
+        return view(
+            'master.product-variants.create',
+            compact(
+                'products',
+                'options'
+            )
+        );
     }
 
     /**
@@ -40,15 +59,66 @@ class ProductVariantController extends Controller
      */
     public function store(StoreProductVariantRequest $request)
     {
-        ProductVariant::create(
-        $request->validated()
-        );
+        DB::transaction(function () use ($request) {
+
+            $variant = ProductVariant::create([
+
+                'product_id' => $request->product_id,
+
+                'name' => $request->name,
+
+                'status' => $request->status,
+
+            ]);
+
+            foreach (
+                $request->input(
+                    'price_tiers',
+                    []
+                ) as $tier
+            ) {
+
+                ProductPrice::create([
+
+                    'product_id' =>
+                        $request->product_id,
+
+                    'product_variant_id' =>
+                        $variant->id,
+
+                    'product_option_id' =>
+                        $tier['product_option_id']
+                        ?? null,
+
+                    'qty_min' =>
+                        $tier['qty_min'],
+
+                    'qty_max' =>
+                        $tier['qty_max'],
+
+                    'price' =>
+                        $tier['price'],
+
+                    'effective_from' =>
+                        now()->toDateString(),
+
+                    'effective_until' =>
+                        null,
+
+                    'status' =>
+                        true,
+
+                ]);
+            }
+        });
 
         return redirect()
-            ->route('master.product-variants.index')
+            ->route(
+                'master.product-variants.index'
+            )
             ->with(
                 'success',
-                'Variant berhasil ditambahkan'
+                'Variant dan harga berhasil ditambahkan'
             );
     }
 
@@ -63,17 +133,28 @@ class ProductVariantController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ProductVariant $product_variant)
+    public function edit(ProductVariant $productVariant)
     {
-        $products = Product::where('status', true)
-        ->orderBy('name')
-        ->get();
+        $productVariant->load('prices');
+
+        $products = Product::where(
+            'status',
+            true
+        )->orderBy('name')->get();
+
+        $options = ProductOption::where(
+            'status',
+            true
+        )
+        ->get()
+        ->groupBy('product_id');
 
         return view(
             'master.product-variants.edit',
             [
-                'variant' => $product_variant,
-                'products' => $products
+                'variant' => $productVariant,
+                'products' => $products,
+                'options' => $options,
             ]
         );
     }
@@ -81,17 +162,73 @@ class ProductVariantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductVariantRequest $request, ProductVariant $product_variant)
+    public function update(UpdateProductVariantRequest $request, ProductVariant $productVariant)
     {
-         $product_variant->update(
-            $request->validated()
-        );
+        DB::transaction(function () use (
+            $request,
+            $productVariant
+        ) {
+
+            $productVariant->update([
+
+                'product_id' =>
+                    $request->product_id,
+
+                'name' =>
+                    $request->name,
+
+                'status' =>
+                    $request->status,
+
+            ]);
+
+            ProductPrice::where(
+                'product_variant_id',
+                $productVariant->id
+            )->delete();
+
+            foreach(
+                $request->price_tiers ?? []
+                as $tier
+            )
+            {
+                ProductPrice::create([
+
+                    'product_id' =>
+                        $request->product_id,
+
+                    'product_variant_id' =>
+                        $productVariant->id,
+
+                    'product_option_id' =>
+                        $tier['product_option_id']
+                        ?? null,
+
+                    'qty_min' =>
+                        $tier['qty_min'],
+
+                    'qty_max' =>
+                        $tier['qty_max'],
+
+                    'price' =>
+                        $tier['price'],
+
+                    'effective_from' =>
+                        now(),
+
+                    'status' =>
+                        true,
+                ]);
+            }
+        });
 
         return redirect()
-            ->route('master.product-variants.index')
+            ->route(
+                'master.product-variants.index'
+            )
             ->with(
                 'success',
-                'Variant berhasil diubah'
+                'Variant berhasil diperbarui'
             );
     }
 

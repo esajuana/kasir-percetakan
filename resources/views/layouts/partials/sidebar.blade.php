@@ -49,6 +49,15 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a href="{{ route('master.product-options.index') }}"
+                class="nav-link text-white">
+
+                    Product Option
+
+                </a>
+            </li>
+
         </ul>
 
     </div>
