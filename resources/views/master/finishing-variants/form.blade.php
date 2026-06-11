@@ -126,17 +126,155 @@
 
         <tbody id="price-table-body">
 
-            <tr id="empty-row">
+            {{-- Prioritas 1: tampilkan data lama jika validation gagal --}}
+            @if(old('price_tiers'))
 
-                <td
-                    colspan="5"
-                    class="text-center text-muted">
+                @foreach(old('price_tiers') as $i => $tier)
 
-                    Belum ada tier harga
+                    <tr>
 
-                </td>
+                        <td>
 
-            </tr>
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="price_tiers[{{ $i }}][qty_min]"
+                                value="{{ $tier['qty_min'] ?? '' }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="price_tiers[{{ $i }}][qty_max]"
+                                value="{{ $tier['qty_max'] ?? '' }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="text"
+                                class="form-control price-input"
+                                name="price_tiers[{{ $i }}][normal_price]"
+                                value="{{ $tier['normal_price'] ?? '' }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="text"
+                                class="form-control price-input"
+                                name="price_tiers[{{ $i }}][sponsor_price]"
+                                value="{{ $tier['sponsor_price'] ?? '' }}">
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-sm remove-row">
+
+                                Hapus
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+            {{-- Prioritas 2: tampilkan data dari database saat edit --}}
+            @elseif(
+                isset($priceTiers)
+                && $priceTiers->count()
+            )
+
+                @foreach(
+                    $priceTiers as $i => $tier
+                )
+
+                    <tr>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="price_tiers[{{ $i }}][qty_min]"
+                                value="{{ $tier['qty_min'] }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="price_tiers[{{ $i }}][qty_max]"
+                                value="{{ $tier['qty_max'] }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="text"
+                                class="form-control price-input"
+                                name="price_tiers[{{ $i }}][normal_price]"
+                                value="{{ number_format($tier['normal_price'], 0, ',', '.') }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="text"
+                                class="form-control price-input"
+                                name="price_tiers[{{ $i }}][sponsor_price]"
+                                value="{{ $tier['sponsor_price']
+                                    ? number_format($tier['sponsor_price'], 0, ',', '.')
+                                    : '' }}">
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-sm remove-row">
+
+                                Hapus
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+            {{-- Prioritas 3: create baru --}}
+            @else
+
+                <tr id="empty-row">
+
+                    <td
+                        colspan="5"
+                        class="text-center text-muted">
+
+                        Belum ada tier harga
+
+                    </td>
+
+                </tr>
+
+            @endif
 
         </tbody>
 

@@ -14,6 +14,32 @@ class UpdateFinishingVariantRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $tiers = collect(
+            $this->price_tiers ?? []
+        )->map(function ($tier) {
+
+            $tier['normal_price'] = str_replace(
+                '.',
+                '',
+                $tier['normal_price'] ?? ''
+            );
+
+            $tier['sponsor_price'] = str_replace(
+                '.',
+                '',
+                $tier['sponsor_price'] ?? ''
+            );
+
+            return $tier;
+        });
+
+        $this->merge([
+            'price_tiers' => $tiers->toArray(),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -36,7 +62,33 @@ class UpdateFinishingVariantRequest extends FormRequest
             'status' => [
                 'required',
                 'boolean'
-            ]
+            ],
+            
+            'price_tiers' => [
+                'nullable',
+                'array'
+            ],
+
+            'price_tiers.*.qty_min' => [
+                'required_with:price_tiers',
+                'integer',
+                'min:1'
+            ],
+
+            'price_tiers.*.qty_max' => [
+                'required_with:price_tiers',
+                'integer'
+            ],
+
+            'price_tiers.*.normal_price' => [
+                'required_with:price_tiers',
+                'numeric'
+            ],
+
+            'price_tiers.*.sponsor_price' => [
+                'nullable',
+                'numeric'
+            ],
         ];
     }
 }

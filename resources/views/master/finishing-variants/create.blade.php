@@ -32,6 +32,4 @@
 
 @endsection
 
-@include(
-    'master.finishing-variants.script'
-)
+@include('master.finishing-variants.script')

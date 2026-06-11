@@ -17,7 +17,7 @@
         <form
             action="{{ route(
                 'master.finishing-variants.update',
-                $variant
+                $variant->id
             ) }}"
             method="POST">
 
@@ -36,6 +36,4 @@
 
 @endsection
 
-@include(
-    'master.finishing-variants.script'
-)
+@include('master.finishing-variants.script')

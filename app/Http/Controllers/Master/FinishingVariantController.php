@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\StoreFinishingVariantRequest;
 use App\Http\Requests\Master\UpdateFinishingVariantRequest;
 use App\Models\Finishing;
+use App\Models\FinishingPrice;
 use App\Models\FinishingVariant;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class FinishingVariantController extends Controller
@@ -183,8 +185,10 @@ class FinishingVariantController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(FinishingVariant $variant)
+    public function edit(FinishingVariant $finishingVariant)
     {
+        $finishingVariant->load('prices');
+
         $finishings = Finishing::where(
             'status',
             true
@@ -192,23 +196,203 @@ class FinishingVariantController extends Controller
         ->orderBy('name')
         ->get();
 
+        $priceTiers = $finishingVariant
+            ->prices
+            ->groupBy(function ($price) {
+
+                return implode('-', [
+
+                    $price->qty_min,
+                    $price->qty_max,
+
+                ]);
+
+            })
+            ->map(function ($group) {
+
+                $normal = $group
+                    ->firstWhere(
+                        'price_type',
+                        'normal'
+                    );
+
+                $sponsor = $group
+                    ->firstWhere(
+                        'price_type',
+                        'sponsor'
+                    );
+
+                return [
+
+                    'qty_min' =>
+
+                        $normal?->qty_min,
+
+                    'qty_max' =>
+
+                        $normal?->qty_max,
+
+                    'normal_price' =>
+
+                        $normal?->price,
+
+                    'sponsor_price' =>
+
+                        $sponsor?->price,
+
+                ];
+
+            })
+            ->values();
+
         return view(
             'master.finishing-variants.edit',
-            compact(
-                'variant',
-                'finishings'
-            )
+            [
+                'variant' => $finishingVariant,
+                'finishings' => $finishings,
+                'priceTiers' => $priceTiers,
+            ]
         );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateFinishingVariantRequest $request, FinishingVariant $variant)
+    public function update(UpdateFinishingVariantRequest $request,FinishingVariant $finishingVariant)
     {
-        $variant->update(
-            $request->validated()
-        );
+        DB::transaction(function () use (
+            $request,
+            $finishingVariant
+        ) {
+
+            $finishingVariant->update([
+
+                'finishing_id' =>
+
+                    $request->finishing_id,
+
+                'name' =>
+
+                    $request->name,
+
+                'status' =>
+
+                    $request->status,
+
+            ]);
+
+            FinishingPrice::where(
+
+                'finishing_variant_id',
+                $finishingVariant->id
+
+            )->delete();
+
+            foreach (
+                $request->price_tiers ?? []
+                as $tier
+            ) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Harga Normal
+                |--------------------------------------------------------------------------
+                */
+
+                FinishingPrice::create([
+
+                    'finishing_id' =>
+
+                        $request->finishing_id,
+
+                    'finishing_variant_id' =>
+
+                        $finishingVariant->id,
+
+                    'price_type' =>
+
+                        'normal',
+
+                    'qty_min' =>
+
+                        $tier['qty_min'],
+
+                    'qty_max' =>
+
+                        $tier['qty_max'],
+
+                    'price' =>
+
+                        str_replace(
+                            '.',
+                            '',
+                            $tier['normal_price']
+                        ),
+
+                    'effective_from' =>
+
+                        now(),
+
+                    'status' =>
+
+                        true,
+
+                ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Harga Sponsor
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    !empty(
+                        $tier['sponsor_price']
+                    )
+                ) {
+
+                    FinishingPrice::create([
+
+                        'finishing_id' =>
+
+                            $request->finishing_id,
+
+                        'finishing_variant_id' =>
+
+                            $finishingVariant->id,
+
+                        'price_type' =>
+
+                            'sponsor',
+
+                        'qty_min' =>
+
+                            $tier['qty_min'],
+
+                        'qty_max' =>
+
+                            $tier['qty_max'],
+
+                        'price' =>
+
+                            str_replace(
+                                '.',
+                                '',
+                                $tier['sponsor_price']
+                            ),
+
+                        'effective_from' =>
+
+                            now(),
+
+                        'status' =>
+
+                            true,
+
+                    ]);
+                }
+            }
+        });
 
         return redirect()
             ->route(
@@ -223,9 +407,9 @@ class FinishingVariantController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(FinishingVariant $variant)
+    public function destroy(FinishingVariant $finishingVariant)
     {
-        $variant->delete();
+        $finishingVariant->delete();
 
         return back()->with(
             'success',

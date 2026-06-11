@@ -14,6 +14,31 @@ class StoreFinishingVariantRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $tiers = collect(
+            $this->price_tiers ?? []
+        )->map(function ($tier) {
+
+            $tier['normal_price'] = str_replace(
+                '.',
+                '',
+                $tier['normal_price'] ?? ''
+            );
+
+            $tier['sponsor_price'] = str_replace(
+                '.',
+                '',
+                $tier['sponsor_price'] ?? ''
+            );
+
+            return $tier;
+        });
+
+        $this->merge([
+            'price_tiers' => $tiers->toArray(),
+        ]);
+    }
     /**
      * Get the validation rules that apply to the request.
      *
