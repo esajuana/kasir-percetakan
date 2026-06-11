@@ -67,6 +67,14 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a href="{{ route('master.finishing-variants.index') }}"
+                class="nav-link text-white">
+
+                    Finishing Variant
+
+                </a>
+            </li>
         </ul>
 
     </div>

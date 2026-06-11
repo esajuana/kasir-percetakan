@@ -78,6 +78,12 @@ class ProductVariantController extends Controller
                 ) as $tier
             ) {
 
+                /*
+                |--------------------------------------------------------------------------
+                | Harga Normal
+                |--------------------------------------------------------------------------
+                */
+
                 ProductPrice::create([
 
                     'product_id' =>
@@ -90,6 +96,9 @@ class ProductVariantController extends Controller
                         $tier['product_option_id']
                         ?? null,
 
+                    'price_type' =>
+                        'normal',
+
                     'qty_min' =>
                         $tier['qty_min'],
 
@@ -97,7 +106,11 @@ class ProductVariantController extends Controller
                         $tier['qty_max'],
 
                     'price' =>
-                        $tier['price'],
+                        str_replace(
+                            '.',
+                            '',
+                            $tier['normal_price']
+                        ),
 
                     'effective_from' =>
                         now()->toDateString(),
@@ -109,6 +122,58 @@ class ProductVariantController extends Controller
                         true,
 
                 ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Harga Sponsor
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    !empty(
+                        $tier['sponsor_price']
+                    )
+                ) {
+
+                    ProductPrice::create([
+
+                        'product_id' =>
+                            $request->product_id,
+
+                        'product_variant_id' =>
+                            $variant->id,
+
+                        'product_option_id' =>
+                            $tier['product_option_id']
+                            ?? null,
+
+                        'price_type' =>
+                            'sponsor',
+
+                        'qty_min' =>
+                            $tier['qty_min'],
+
+                        'qty_max' =>
+                            $tier['qty_max'],
+
+                        'price' =>
+                            str_replace(
+                                '.',
+                                '',
+                                $tier['sponsor_price']
+                            ),
+
+                        'effective_from' =>
+                            now()->toDateString(),
+
+                        'effective_until' =>
+                            null,
+
+                        'status' =>
+                            true,
+
+                    ]);
+                }
             }
         });
 
@@ -149,14 +214,64 @@ class ProductVariantController extends Controller
         ->get()
         ->groupBy('product_id');
 
-        return view(
-            'master.product-variants.edit',
-            [
-                'variant' => $productVariant,
-                'products' => $products,
-                'options' => $options,
-            ]
-        );
+        $priceTiers = $productVariant
+            ->prices
+            ->groupBy(function ($price) {
+
+                return implode('-', [
+
+                    $price->product_option_id,
+                    $price->qty_min,
+                    $price->qty_max
+
+                ]);
+
+            })
+            ->map(function ($group) {
+
+                $normal = $group
+                    ->firstWhere(
+                        'price_type',
+                        'normal'
+                    );
+
+                $sponsor = $group
+                    ->firstWhere(
+                        'price_type',
+                        'sponsor'
+                    );
+
+                return [
+
+                    'product_option_id' =>
+                        $normal?->product_option_id,
+
+                    'qty_min' =>
+                        $normal?->qty_min,
+
+                    'qty_max' =>
+                        $normal?->qty_max,
+
+                    'normal_price' =>
+                        $normal?->price,
+
+                    'sponsor_price' =>
+                        $sponsor?->price,
+
+                ];
+
+            })
+            ->values();
+
+            return view(
+                'master.product-variants.edit',
+                [
+                    'variant' => $productVariant,
+                    'products' => $products,
+                    'options' => $options,
+                    'priceTiers' => $priceTiers,
+                ]
+            );
     }
 
     /**
@@ -192,6 +307,12 @@ class ProductVariantController extends Controller
                 as $tier
             )
             {
+                /*
+                |--------------------------------------------------------------------------
+                | Harga Normal
+                |--------------------------------------------------------------------------
+                */
+
                 ProductPrice::create([
 
                     'product_id' =>
@@ -204,6 +325,9 @@ class ProductVariantController extends Controller
                         $tier['product_option_id']
                         ?? null,
 
+                    'price_type' =>
+                        'normal',
+
                     'qty_min' =>
                         $tier['qty_min'],
 
@@ -211,7 +335,11 @@ class ProductVariantController extends Controller
                         $tier['qty_max'],
 
                     'price' =>
-                        $tier['price'],
+                        str_replace(
+                            '.',
+                            '',
+                            $tier['normal_price']
+                        ),
 
                     'effective_from' =>
                         now(),
@@ -219,6 +347,54 @@ class ProductVariantController extends Controller
                     'status' =>
                         true,
                 ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Harga Sponsor
+                |--------------------------------------------------------------------------
+                */
+
+                if(
+                    !empty(
+                        $tier['sponsor_price']
+                    )
+                )
+                {
+                    ProductPrice::create([
+
+                        'product_id' =>
+                            $request->product_id,
+
+                        'product_variant_id' =>
+                            $productVariant->id,
+
+                        'product_option_id' =>
+                            $tier['product_option_id']
+                            ?? null,
+
+                        'price_type' =>
+                            'sponsor',
+
+                        'qty_min' =>
+                            $tier['qty_min'],
+
+                        'qty_max' =>
+                            $tier['qty_max'],
+
+                        'price' =>
+                            str_replace(
+                                '.',
+                                '',
+                                $tier['sponsor_price']
+                            ),
+
+                        'effective_from' =>
+                            now(),
+
+                        'status' =>
+                            true,
+                    ]);
+                }
             }
         });
 

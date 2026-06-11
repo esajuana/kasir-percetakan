@@ -78,8 +78,14 @@ class StoreProductVariantRequest extends FormRequest
                 'gte:price_tiers.*.qty_min'
             ],
 
-            'price_tiers.*.price' => [
-                'required_with:price_tiers',
+            'price_tiers.*.normal_price' => [
+                'required',
+                'numeric',
+                'min:0'
+            ],
+
+            'price_tiers.*.sponsor_price' => [
+                'nullable',
                 'numeric',
                 'min:0'
             ],

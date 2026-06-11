@@ -152,8 +152,12 @@
                     Qty Max
                 </th>
 
-                <th width="25%">
-                    Harga
+                <th width="15%">
+                    Harga Normal
+                </th>
+
+                <th width="15%">
+                    Harga Sponsor
                 </th>
 
                 <th width="10%">
@@ -166,14 +170,14 @@
 
     <tbody id="price-table-body">
 
-        @if(
-            isset($variant)
-            && $variant->prices->count()
-        )
+    @if(
+        isset($priceTiers)
+        && $priceTiers->count()
+    )
 
-            @foreach(
-                $variant->prices as $i => $price
-            )
+        @foreach(
+            $priceTiers as $i => $price
+        )
 
             <tr>
 
@@ -197,7 +201,7 @@
                             <option
                                 value="{{ $option->id }}"
                                 {{
-                                    $price->product_option_id
+                                    $price['product_option_id']
                                     ==
                                     $option->id
                                     ? 'selected'
@@ -219,7 +223,7 @@
                     <input
                         type="number"
                         class="form-control"
-                        value="{{ $price->qty_min }}"
+                        value="{{ $price['qty_min'] }}"
                         name="price_tiers[{{ $i }}][qty_min]">
 
                 </td>
@@ -229,7 +233,7 @@
                     <input
                         type="number"
                         class="form-control"
-                        value="{{ $price->qty_max }}"
+                        value="{{ $price['qty_max'] }}"
                         name="price_tiers[{{ $i }}][qty_max]">
 
                 </td>
@@ -237,10 +241,20 @@
                 <td>
 
                     <input
-                    type="text"
-                    class="form-control price-input"
-                    value="{{ number_format($price->price, 0, ',', '.') }}"
-                    name="price_tiers[{{ $i }}][price]">
+                        type="text"
+                        class="form-control price-input"
+                        value="{{ number_format($price['normal_price'] ?? 0, 0, ',', '.') }}"
+                        name="price_tiers[{{ $i }}][normal_price]">
+
+                </td>
+
+                <td>
+
+                    <input
+                        type="text"
+                        class="form-control price-input"
+                        value="{{ number_format($price['sponsor_price'] ?? 0, 0, ',', '.') }}"
+                        name="price_tiers[{{ $i }}][sponsor_price]">
 
                 </td>
 
@@ -265,7 +279,7 @@
             <tr id="empty-row">
 
                 <td
-                    colspan="5"
+                    colspan="6"
                     class="text-center text-muted">
 
                     Belum ada tier harga

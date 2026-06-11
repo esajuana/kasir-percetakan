@@ -4,7 +4,7 @@ namespace App\Http\Requests\Master;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateFinishingRequest extends FormRequest
+class UpdateFinishingVariantRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,10 @@ class UpdateFinishingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => [
+            
+            'finishing_id' => [
             'required',
-            'exists:categories,id'
+            'exists:finishings,id'
             ],
 
             'name' => [
@@ -32,15 +33,10 @@ class UpdateFinishingRequest extends FormRequest
                 'max:100'
             ],
 
-            'pricing_type' => [
-                'required',
-                'in:unit,area,length,perimeter,manual'
-            ],
-
             'status' => [
                 'required',
                 'boolean'
-            ],
+            ]
         ];
     }
 }

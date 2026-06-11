@@ -156,9 +156,19 @@ function addTierRow()
 
                 <input
                     type="text"
-                    placeholder="Harga"
+                    placeholder="Harga Normal"
                     class="form-control price-input"
-                    name="price_tiers[${index}][price]">
+                    name="price_tiers[${index}][normal_price]">
+
+            </td>
+
+            <td>
+
+                <input
+                    type="text"
+                    placeholder="Harga Sponsor"
+                    class="form-control price-input"
+                    name="price_tiers[${index}][sponsor_price]">
 
             </td>
 

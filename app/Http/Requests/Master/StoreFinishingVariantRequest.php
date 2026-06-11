@@ -4,7 +4,7 @@ namespace App\Http\Requests\Master;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProductVariantRequest extends FormRequest
+class StoreFinishingVariantRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -12,24 +12,6 @@ class UpdateProductVariantRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
-    }
-
-    protected function prepareForValidation(): void
-    {
-        $tiers = $this->price_tiers ?? [];
-
-        foreach ($tiers as $key => $tier)
-        {
-            $tiers[$key]['price'] = str_replace(
-                '.',
-                '',
-                $tier['price'] ?? 0
-            );
-        }
-
-        $this->merge([
-            'price_tiers' => $tiers
-        ]);
     }
 
     /**
@@ -40,9 +22,10 @@ class UpdateProductVariantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => [
-                'required',
-                'exists:products,id'
+            
+            'finishing_id' => [
+            'required',
+            'exists:finishings,id'
             ],
 
             'name' => [
@@ -54,15 +37,10 @@ class UpdateProductVariantRequest extends FormRequest
                 'required',
                 'boolean'
             ],
-
+            
             'price_tiers' => [
                 'nullable',
                 'array'
-            ],
-
-            'price_tiers.*.product_option_id' => [
-                'nullable',
-                'exists:product_options,id'
             ],
 
             'price_tiers.*.qty_min' => [
@@ -73,20 +51,17 @@ class UpdateProductVariantRequest extends FormRequest
 
             'price_tiers.*.qty_max' => [
                 'required_with:price_tiers',
-                'integer',
-                'gte:price_tiers.*.qty_min'
+                'integer'
             ],
 
             'price_tiers.*.normal_price' => [
-                'required',
-                'numeric',
-                'min:0'
+                'required_with:price_tiers',
+                'numeric'
             ],
 
             'price_tiers.*.sponsor_price' => [
                 'nullable',
-                'numeric',
-                'min:0'
+                'numeric'
             ],
         ];
     }

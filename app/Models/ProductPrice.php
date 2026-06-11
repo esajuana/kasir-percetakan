@@ -10,12 +10,13 @@ class ProductPrice extends Model
         'product_id',
         'product_variant_id',
         'product_option_id',
+        'price_type',
         'qty_min',
         'qty_max',
         'price',
         'effective_from',
         'effective_until',
-        'status',
+        'status'
     ];
 
     protected $casts = [
@@ -41,6 +42,22 @@ class ProductPrice extends Model
         return $this->belongsTo(
             ProductOption::class,
             'product_option_id'
+        );
+    }
+
+    public function scopeNormal($query)
+    {
+        return $query->where(
+            'price_type',
+            'normal'
+        );
+    }
+
+    public function scopeSponsor($query)
+    {
+        return $query->where(
+            'price_type',
+            'sponsor'
         );
     }
 }

@@ -9,6 +9,7 @@ class FinishingPrice extends Model
     protected $fillable = [
         'finishing_id',
         'finishing_variant_id',
+        'price_type',
         'qty_min',
         'qty_max',
         'price',
@@ -32,6 +33,22 @@ class FinishingPrice extends Model
         return $this->belongsTo(
             FinishingVariant::class,
             'finishing_variant_id'
+        );
+    }
+
+    public function scopeNormal($query)
+    {
+        return $query->where(
+            'price_type',
+            'normal'
+        );
+    }
+
+    public function scopeSponsor($query)
+    {
+        return $query->where(
+            'price_type',
+            'sponsor'
         );
     }
 }
