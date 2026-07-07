@@ -43,7 +43,7 @@ class ProductVariantController extends Controller
             true
         )
         ->get()
-        ->groupBy('product_id');
+        ->groupBy('category_id');
 
         return view(
             'master.product-variants.create',
@@ -200,7 +200,10 @@ class ProductVariantController extends Controller
      */
     public function edit(ProductVariant $productVariant)
     {
-        $productVariant->load('prices');
+        $productVariant->load([
+            'product.category',
+            'prices'
+        ]);
 
         $products = Product::where(
             'status',
@@ -212,7 +215,7 @@ class ProductVariantController extends Controller
             true
         )
         ->get()
-        ->groupBy('product_id');
+        ->groupBy('category_id');
 
         $priceTiers = $productVariant
             ->prices

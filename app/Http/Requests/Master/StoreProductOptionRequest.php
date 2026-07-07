@@ -22,9 +22,9 @@ class StoreProductOptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => [
+            'category_id' => [
             'required',
-            'exists:products,id'
+            'exists:categories,id'
             ],
 
             'name' => [

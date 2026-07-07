@@ -168,129 +168,246 @@
 
         </thead>
 
-    <tbody id="price-table-body">
+        <tbody id="price-table-body">
 
-    @if(
-        isset($priceTiers)
-        && $priceTiers->count()
-    )
+            {{-- Prioritas pertama: data dari old() --}}
+            @if(old('price_tiers'))
 
-        @foreach(
-            $priceTiers as $i => $price
-        )
+                @foreach(old('price_tiers') as $i => $tier)
 
-            <tr>
+                    <tr>
 
-                <td>
+                        <td>
 
-                    <select
-                        name="price_tiers[{{ $i }}][product_option_id]"
-                        class="form-select option-select">
+                            <select
+                                name="price_tiers[{{ $i }}][product_option_id]"
+                                class="form-select option-select">
 
-                        <option value="">
-                            Tanpa Option
-                        </option>
+                                <option value="">
+                                    Tanpa Option
+                                </option>
 
-                        @foreach(
-                            $options[
-                                $variant->product_id
-                            ] ?? []
-                            as $option
-                        )
+                                @php
+                                    $selectedProduct = old(
+                                        'product_id',
+                                        $variant->product_id ?? null
+                                    );
 
-                            <option
-                                value="{{ $option->id }}"
-                                {{
-                                    $price['product_option_id']
-                                    ==
-                                    $option->id
-                                    ? 'selected'
-                                    : ''
-                                }}>
+                                    $selectedCategory = $products
+                                        ->firstWhere('id', $selectedProduct)
+                                        ?->category_id;
+                                @endphp
 
-                                {{ $option->name }}
+                                @foreach(
+                                    $options[$selectedCategory] ?? [] as $option
+                                )
 
-                            </option>
+                                    <option
+                                        value="{{ $option->id }}"
+                                        {{
+                                            $tier['product_option_id']
+                                            == $option->id
+                                            ? 'selected'
+                                            : ''
+                                        }}>
 
-                        @endforeach
+                                        {{ $option->name }}
 
-                    </select>
+                                    </option>
 
-                </td>
+                                @endforeach
 
-                <td>
+                            </select>
 
-                    <input
-                        type="number"
-                        class="form-control"
-                        value="{{ $price['qty_min'] }}"
-                        name="price_tiers[{{ $i }}][qty_min]">
+                        </td>
 
-                </td>
+                        <td>
 
-                <td>
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="price_tiers[{{ $i }}][qty_min]"
+                                value="{{ $tier['qty_min'] ?? '' }}">
 
-                    <input
-                        type="number"
-                        class="form-control"
-                        value="{{ $price['qty_max'] }}"
-                        name="price_tiers[{{ $i }}][qty_max]">
+                        </td>
 
-                </td>
+                        <td>
 
-                <td>
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="price_tiers[{{ $i }}][qty_max]"
+                                value="{{ $tier['qty_max'] ?? '' }}">
 
-                    <input
-                        type="text"
-                        class="form-control price-input"
-                        value="{{ number_format($price['normal_price'] ?? 0, 0, ',', '.') }}"
-                        name="price_tiers[{{ $i }}][normal_price]">
+                        </td>
 
-                </td>
+                        <td>
 
-                <td>
+                            <input
+                                type="text"
+                                class="form-control price-input"
+                                name="price_tiers[{{ $i }}][normal_price]"
+                                value="{{ $tier['normal_price'] ?? '' }}">
 
-                    <input
-                        type="text"
-                        class="form-control price-input"
-                        value="{{ number_format($price['sponsor_price'] ?? 0, 0, ',', '.') }}"
-                        name="price_tiers[{{ $i }}][sponsor_price]">
+                        </td>
 
-                </td>
+                        <td>
 
-                <td>
+                            <input
+                                type="text"
+                                class="form-control price-input"
+                                name="price_tiers[{{ $i }}][sponsor_price]"
+                                value="{{ $tier['sponsor_price'] ?? '' }}">
 
-                    <button
-                        type="button"
-                        class="btn btn-danger btn-sm remove-row">
+                        </td>
 
-                        Hapus
+                        <td>
 
-                    </button>
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-sm remove-row">
 
-                </td>
+                                Hapus
 
-            </tr>
+                            </button>
 
-            @endforeach
+                        </td>
 
-        @else
+                    </tr>
 
-            <tr id="empty-row">
+                @endforeach
 
-                <td
-                    colspan="6"
-                    class="text-center text-muted">
+            {{-- Prioritas kedua: data dari database saat edit --}}
+            @elseif(
+                isset($priceTiers)
+                && $priceTiers->count()
+            )
 
-                    Belum ada tier harga
+                @foreach(
+                    $priceTiers as $i => $tier
+                )
 
-                </td>
+                    <tr>
+                        <td>
 
-            </tr>
+                            <select
+                                name="price_tiers[{{ $i }}][product_option_id]"
+                                class="form-select option-select">
 
-        @endif
+                                <option value="">
+                                    Tanpa Option
+                                </option>
 
-    </tbody>
+                                @php
+                                    $selectedProduct = old(
+                                        'product_id',
+                                        $variant->product_id ?? null
+                                    );
+
+                                    $selectedCategory = $products
+                                        ->firstWhere('id', $selectedProduct)
+                                        ?->category_id;
+                                @endphp
+
+                                @foreach(
+                                    $options[$selectedCategory] ?? [] as $option
+                                )
+
+                                    <option
+                                        value="{{ $option->id }}"
+                                        {{
+                                            $tier['product_option_id']
+                                            == $option->id
+                                            ? 'selected'
+                                            : ''
+                                        }}>
+
+                                        {{ $option->name }}
+
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="price_tiers[{{ $i }}][qty_min]"
+                                value="{{ $tier['qty_min'] }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="price_tiers[{{ $i }}][qty_max]"
+                                value="{{ $tier['qty_max'] }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="text"
+                                class="form-control price-input"
+                                name="price_tiers[{{ $i }}][normal_price]"
+                                value="{{ number_format($tier['normal_price'], 0, ',', '.') }}">
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="text"
+                                class="form-control price-input"
+                                name="price_tiers[{{ $i }}][sponsor_price]"
+                                value="{{ $tier['sponsor_price']
+                                    ? number_format($tier['sponsor_price'], 0, ',', '.')
+                                    : '' }}">
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-sm remove-row">
+
+                                Hapus
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+            {{-- Create baru --}}
+            @else
+
+                <tr id="empty-row">
+
+                    <td
+                        colspan="6"
+                        class="text-center text-muted">
+
+                        Belum ada tier harga
+
+                    </td>
+
+                </tr>
+
+            @endif
+
+        </tbody>
 
     </table>
 
@@ -346,13 +463,13 @@
 
                     <label class="form-label">
 
-                        Produk
+                        Kategori
 
                     </label>
 
                     <input
                         type="text"
-                        id="selected-product"
+                        id="selected-category"
                         class="form-control"
                         readonly>
 

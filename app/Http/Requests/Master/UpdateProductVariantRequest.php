@@ -20,11 +20,19 @@ class UpdateProductVariantRequest extends FormRequest
 
         foreach ($tiers as $key => $tier)
         {
-            $tiers[$key]['price'] = str_replace(
-                '.',
-                '',
-                $tier['price'] ?? 0
-            );
+            $tiers[$key]['normal_price'] =
+                str_replace(
+                    '.',
+                    '',
+                    $tier['normal_price'] ?? 0
+                );
+
+            $tiers[$key]['sponsor_price'] =
+                str_replace(
+                    '.',
+                    '',
+                    $tier['sponsor_price'] ?? 0
+                );
         }
 
         $this->merge([

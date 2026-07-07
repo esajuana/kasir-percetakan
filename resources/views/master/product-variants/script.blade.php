@@ -24,11 +24,17 @@ function formatRupiah(value)
 
 const productOptions = {
 
-    @foreach($options as $productId => $productOptions)
+    @foreach(
+        $options
+        as $categoryId => $categoryOptions
+    )
 
-        "{{ $productId }}": [
+        "{{ $categoryId }}": [
 
-            @foreach($productOptions as $option)
+            @foreach(
+                $categoryOptions
+                as $option
+            )
 
                 {
                     id: "{{ $option->id }}",
@@ -38,6 +44,17 @@ const productOptions = {
             @endforeach
 
         ],
+
+    @endforeach
+
+};
+
+const productCategories = {
+
+    @foreach($products as $product)
+
+        "{{ $product->id }}":
+            "{{ $product->category_id }}",
 
     @endforeach
 
@@ -56,15 +73,20 @@ function createOptionDropdown(index)
             'product_id'
         ).value;
 
+    let categoryId =
+    productCategories[
+        productId
+    ];
+
     let optionsHtml = `
         <option value="">
             Tanpa Option
         </option>
     `;
 
-    if(productOptions[productId])
+    if(productOptions[categoryId])
     {
-        productOptions[productId]
+        productOptions[categoryId]
         .forEach(
             option =>
             {
@@ -347,20 +369,36 @@ document
             return;
         }
 
-        document
-        .getElementById(
-            'selected-product'
-        )
-        .value =
+        let selectedText =
             productSelect.options[
                 productSelect.selectedIndex
             ].text;
 
-        new bootstrap.Modal(
+        let productId =
+            document.getElementById(
+                'product_id'
+            ).value;
+
+        let categoryId =
+            productCategories[
+                productId
+            ];
+        document
+        .getElementById(
+            'selected-category'
+        )
+        .value =
+            categoryNames[
+                categoryId
+            ] ?? '';
+
+        const modal = new bootstrap.Modal(
             document.getElementById(
                 'optionModal'
             )
-        ).show();
+        );
+
+        modal.show();
     }
 );
 
@@ -383,12 +421,37 @@ document
                 'product_id'
             ).value;
 
+        let categoryId =
+            productCategories[
+                productId
+            ];
+
         let optionName =
             document.getElementById(
                 'option-name'
-            ).value.trim();
+            )
+            .value
+            .trim();
 
-        if(optionName === '')
+        if (!productId)
+        {
+            alert(
+                'Pilih produk terlebih dahulu'
+            );
+
+            return;
+        }
+
+        if (!categoryId)
+        {
+            alert(
+                'Kategori produk tidak ditemukan'
+            );
+
+            return;
+        }
+
+        if (optionName === '')
         {
             alert(
                 'Nama option wajib diisi'
@@ -417,8 +480,8 @@ document
 
                 body: JSON.stringify({
 
-                    product_id:
-                        productId,
+                    category_id:
+                        categoryId,
 
                     name:
                         optionName
@@ -433,20 +496,42 @@ document
         .then(
             data =>
             {
-                if(data.success)
+                if (data.success)
                 {
-                    if(!productOptions[productId])
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Tambah ke object option berdasarkan category
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        !productOptions[
+                            categoryId
+                        ]
+                    )
                     {
-                        productOptions[productId] = [];
+                        productOptions[
+                            categoryId
+                        ] = [];
                     }
 
-                    productOptions[productId].push({
+                    productOptions[
+                        categoryId
+                    ].push({
 
-                        id: data.option.id,
+                        id:
+                            data.option.id,
 
-                        name: data.option.name
+                        name:
+                            data.option.name
 
                     });
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Tambah ke seluruh dropdown option
+                    |--------------------------------------------------------------------------
+                    */
 
                     document
                     .querySelectorAll(
@@ -461,7 +546,9 @@ document
                                     data.option.id
                                 );
 
-                            select.add(option);
+                            select.add(
+                                option
+                            );
                         }
                     );
 
@@ -487,7 +574,9 @@ document
         .catch(
             error =>
             {
-                console.error(error);
+                console.error(
+                    error
+                );
 
                 alert(
                     'Gagal menambahkan option'
@@ -514,6 +603,17 @@ document.addEventListener(
         }
     }
 );
+
+const categoryNames = {
+
+    @foreach($products as $product)
+
+        "{{ $product->category_id }}":
+            "{{ $product->category->name }}",
+
+    @endforeach
+
+};
 
 </script>
 

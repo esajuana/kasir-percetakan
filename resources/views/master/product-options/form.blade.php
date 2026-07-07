@@ -3,24 +3,24 @@
     <div class="col-md-6 mb-3">
 
         <label class="form-label">
-            Produk
+            Kategori
         </label>
 
         <select
-            name="product_id"
-            class="form-select @error('product_id') is-invalid @enderror">
+            name="category_id"
+            class="form-select @error('category_id') is-invalid @enderror">
 
             <option value="">
-                Pilih Produk
+                Pilih Kategori
             </option>
 
-            @foreach($products as $product)
+            @foreach($categories as $category)
 
                 <option
-                    value="{{ $product->id }}"
-                    {{ old('product_id', $option->product_id ?? '') == $product->id ? 'selected' : '' }}>
+                    value="{{ $category->id }}"
+                    {{ old('category_id', $option->category_id ?? '') == $category->id ? 'selected' : '' }}>
 
-                    {{ $product->name }}
+                    {{ $category->name }}
 
                 </option>
 
@@ -28,7 +28,7 @@
 
         </select>
 
-        @error('product_id')
+        @error('category_id')
             <div class="invalid-feedback">
                 {{ $message }}
             </div>

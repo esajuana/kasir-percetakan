@@ -7,14 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class ProductOption extends Model
 {
     protected $fillable = [
-        'product_id',
+        'category_id',
         'name',
         'status'
     ];
 
-    public function product()
+    public function category()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(
+            Category::class
+        );
     }
 
     public function prices()

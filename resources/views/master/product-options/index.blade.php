@@ -31,7 +31,7 @@
 
                         <th width="5%">No</th>
 
-                        <th>Produk</th>
+                        <th>Kategori</th>
 
                         <th>Option</th>
 
@@ -54,7 +54,7 @@
                             </td>
 
                             <td>
-                                {{ $option->product->name }}
+                                {{ $option->category->name }}
                             </td>
 
                             <td>

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\StoreProductOptionRequest;
 use App\Http\Requests\Master\UpdateProductOptionRequest;
-use App\Models\Product;
+use App\Models\Category;
 use App\Models\ProductOption;
 use Illuminate\Http\Request;
 
@@ -16,7 +16,7 @@ class ProductOptionController extends Controller
      */
     public function index()
     {
-        $options = ProductOption::with('product')
+        $options = ProductOption::with('category')
             ->latest()
             ->paginate(10);
 
@@ -31,13 +31,13 @@ class ProductOptionController extends Controller
      */
     public function create()
     {
-        $products = Product::where('status', true)
+        $categories = Category::where('status', true)
             ->orderBy('name')
             ->get();
 
         return view(
             'master.product-options.create',
-            compact('products')
+            compact('categories')
         );
     }
 
@@ -71,7 +71,7 @@ class ProductOptionController extends Controller
      */
     public function edit(ProductOption $product_option)
     {
-        $products = Product::where('status', true)
+        $categories = Category::where('status', true)
             ->orderBy('name')
             ->get();
 
@@ -79,7 +79,7 @@ class ProductOptionController extends Controller
             'master.product-options.edit',
             [
                 'option' => $product_option,
-                'products' => $products
+                'categories' => $categories
             ]
         );
     }
@@ -120,9 +120,9 @@ class ProductOptionController extends Controller
     {
         $request->validate([
 
-            'product_id' => [
+            'category_id' => [
                 'required',
-                'exists:products,id'
+                'exists:categories,id'
             ],
 
             'name' => [
@@ -133,7 +133,7 @@ class ProductOptionController extends Controller
 
         $option = ProductOption::create([
 
-            'product_id' => $request->product_id,
+            'category_id' => $request->category_id,
 
             'name' => $request->name,
 
