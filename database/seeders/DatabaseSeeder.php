@@ -13,6 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        $this->call([
+
+            PricingFormulaSeeder::class,
+
+            PriceTypeSeeder::class,
+
+        ]);
         // User::factory(10)->create();
 
         User::factory()->create([
